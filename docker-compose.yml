@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. Η Βάση Δεδομένων μας (PostgreSQL)
+  db:
+    image: postgres:15
+    container_name: geologist_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: geologist_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  # 2. Το Backend (FastAPI + PyTorch)
+  backend:
+    build: ./backend
+    container_name: geologist_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://admin:secretpassword@db:5432/geologist_db
+
+  # 3. Το Frontend (Streamlit)
+  frontend:
+    build: ./frontend
+    container_name: geologist_frontend
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:8000
+
+# Αποθηκεύουμε τα δεδομένα της βάσης μόνιμα στον σκληρό δίσκο
+volumes:
+  pgdata:

@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+python-multipart
+torch
+numpy
+psycopg2-binary
+sqlalchemy

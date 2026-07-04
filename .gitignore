@@ -1,0 +1,12 @@
+# Models and Data
+*.pth
+*.pt
+*.npy
+
+# Python Caches
+__pycache__/
+*.pyc
+
+# Environment files
+venv/
+.env
