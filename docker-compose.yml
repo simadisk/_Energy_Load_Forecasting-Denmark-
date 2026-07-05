@@ -37,6 +37,20 @@ services:
     environment:
       - BACKEND_URL=http://backend:8000
 
-# Αποθηκεύουμε τα δεδομένα της βάσης μόνιμα στον σκληρό δίσκο
+  # ==========================================
+  # 4. ΝΕΟ: Ο Σταθμός Παρακολούθησης (MLflow)
+  # ==========================================
+  mlflow:
+    image: python:3.10-slim
+    container_name: geologist_mlflow
+    ports:
+      - "5000:5000"
+    command: bash -c "pip install mlflow && mlflow server --host 0.0.0.0 --port 5000"
+    volumes:
+      - mlflow_data:/mlflow
+    working_dir: /mlflow
+
+# Αποθηκεύουμε τα δεδομένα μόνιμα στον σκληρό δίσκο
 volumes:
   pgdata:
+  mlflow_data:

@@ -1,4 +1,4 @@
-name: AI Geologist CI
+name: AI Geologist CI/CD
 
 on:
   push:
@@ -7,21 +7,52 @@ on:
     branches: [ "main" ]
 
 jobs:
+  # ==========================================
+  # 1. CI: Ο ΕΛΕΓΧΟΣ ΠΟΙΟΤΗΤΑΣ
+  # ==========================================
   test:
     runs-on: ubuntu-latest
-
     steps:
     - name: 📥 Λήψη του Κώδικα (Checkout)
       uses: actions/checkout@v3
 
     - name: 🐳 Χτίσιμο και Εκκίνηση των Containers
-      # Σηκώνουμε μόνο τη βάση και το backend για το τεστ, για οικονομία πόρων
       run: docker compose up -d db backend
 
     - name: ⏳ Αναμονή για Φόρτωση του AI
-      # Δίνουμε 30 δευτερόλεπτα στο PyTorch να φορτώσει το μοντέλο στη μνήμη
       run: sleep 30
 
     - name: ✅ Εκτέλεση των Pytest
-      # Τρέχουμε το τεστ ακριβώς όπως το έτρεξες εσύ τοπικά
       run: docker exec geologist_backend pytest
+
+  # ==========================================
+  # 2. CD: Η ΠΑΡΑΔΟΣΗ ΣΤΟ CLOUD
+  # ==========================================
+  deploy:
+    needs: test  # ΑΥΤΟ ΕΙΝΑΙ ΤΟ ΚΛΕΙΔΙ: Προχωράει ΜΟΝΟ αν το 'test' πετύχει!
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      
+    steps:
+    - name: 📥 Λήψη του Κώδικα
+      uses: actions/checkout@v3
+
+    - name: 🔐 Σύνδεση στην Αποθήκη του GitHub (GHCR)
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 📦 Πακετάρισμα και Ανέβασμα του Backend
+      run: |
+        # Το Docker απαιτεί το όνομα χρήστη να είναι πάντα με μικρά γράμματα
+        REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        
+        # 1. Χτίζουμε την τελική εικόνα (image) του AI Backend
+        docker build -t ghcr.io/$REPO_OWNER/ai-geologist-backend:latest ./backend
+        
+        # 2. Στέλνουμε το έτοιμο κουτί στο Cloud!
+        docker push ghcr.io/$REPO_OWNER/ai-geologist-backend:latest
