@@ -16,7 +16,7 @@ jobs:
 
     - name: 🐳 Χτίσιμο και Εκκίνηση των Containers
       # Σηκώνουμε μόνο τη βάση και το backend για το τεστ, για οικονομία πόρων
-      run: docker-compose up -d db backend
+      run: docker compose up -d db backend
 
     - name: ⏳ Αναμονή για Φόρτωση του AI
       # Δίνουμε 30 δευτερόλεπτα στο PyTorch να φορτώσει το μοντέλο στη μνήμη
