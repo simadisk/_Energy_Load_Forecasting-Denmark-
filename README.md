@@ -36,7 +36,6 @@ Before starting, the system needs your secret passwords to work. Create a file n
 ```text
 1. Create a new file in the main folder and name it exactly `.env`.
 2. Copy the text below and paste it into your `.env` file:
-
 DB_USER=admin
 DB_PASSWORD=your_secret_password_here
 DB_NAME=postgres
@@ -60,7 +59,23 @@ Now that the system is running, open your web browser and click on these links:
 ⚙️ To see the background code (FastAPI): http://localhost:8000/docs
 
 
+### Step 4: Fetch Historical Data (First-time setup only)
+When you start the system for the very first time, your database is completely empty. The automated robot only fetches new data at midnight. 
+To populate your database with historical data (from 2022 to today) and make the graphs come alive, you need to trigger the initial data load. 
+Go to the FastAPI documentation page:
+👉 [http://localhost:8000/docs](http://localhost:8000/docs)
+1. Find the endpoint for data ingestion (e.g., `/fetch-historical-data` or similar).
+2. Click **"Try it out"**.
+3. Click **"Execute"**. 
+
+*Note: This might take a couple of minutes as it downloads years of energy and weather data. Once it's done, refresh your Grafana and Streamlit pages!*
+
+
 🛑 How to stop the system
 When you are done and want to turn off the system, just run this command in your terminal:
 Bash
 docker-compose down
+**Want to completely wipe the database and start fresh?**
+If you want to delete all downloaded data and reset the system, run:
+```bash
+docker-compose down -v
