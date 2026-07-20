@@ -34,10 +34,17 @@ You don't need to start each part separately. We use **Docker**, which is like a
 ### Step 1: Add your keys
 Before starting, the system needs your secret passwords to work. Create a file named `.env` in the main folder and add your details like this:
 ```text
+1. Create a new file in the main folder and name it exactly `.env`.
+2. Copy the text below and paste it into your `.env` file:
+
 DB_USER=admin
 DB_PASSWORD=your_secret_password_here
 DB_NAME=postgres
 ENTSOE_API_KEY=your_api_key_here
+
+Where to get these values:
+Database (DB) values: You can invent these! The system will automatically build a new database on your computer using whatever username and password you type here.
+ENTSOE_API_KEY: You need a free account from the ENTSO-E Transparency Platform. Once registered, you can generate your own API key and paste it here.
 
 
 ### Step 2: Turn it on
